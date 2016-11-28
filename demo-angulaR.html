@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+	<title>demo</title>
+	<link rel="stylesheet" href="css/swiper-3.4.0.min.css" />
+	<link rel="stylesheet" href="css/animate.css" />
+	<link rel="stylesheet" href="css/index.css" />
+	<script type="text/javascript" src="js/angular.js"></script>
+	<script type="text/javascript" src="js/zepto.min.js"></script>
+	<script type="text/javascript" src="js/iscroll-probe.js"></script>
+	<script type="text/javascript" src="js/swiper-3.4.0.min.js"></script>
+</head>
+<body ng-app='app'>
+	<div ng-controller="con1" id="contr">
+		<header>
+			<nav>
+				<div class="swiper-container">
+				    <div class="swiper-wrapper">
+				        <div class="swiper-slide"><span>已结束</span></div>
+				        <div class="swiper-slide"><span class="active">{{Month}}月{{day}}号</span></div>
+				        <div class="swiper-slide"><span>{{Month}}月{{day+1}}号</span></div>
+				        <div class="swiper-slide"><span>{{Month}}月{{day+2}}号</span></div>
+				        <div class="swiper-slide"><span>{{Month}}月{{day+3}}号</span></div>
+				    	<div class="swiper-slide"><span>{{Month}}月{{day+4}}号</span></div>
+				        <div class="swiper-slide"><span>{{Month}}月{{day+5}}号</span></div>
+				        <div class="swiper-slide"><span>{{Month}}月{{day+6}}号</span></div>
+				    </div>
+				</div>
+			</nav>
+			<div class="time">
+				<p>
+					<span>距离开拍结束</span>
+					<span class="timer">{{hours}}:{{minutes}}:{{seconds}}</span>
+				</p>
+			</div>
+		</header>
+			<section class="wrapper">
+			<div class="scroller">
+			    <div class="downTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;">下拉
+			    </div> 
+				<ul>
+					<li ng-repeat="data in datas">
+						<p class="edit">
+							<b>&#xe606;</b>
+							<b>&#xe74b;</b>
+						</p>
+						<dl>
+							<dt><img ng-src="{{data.img}}"/></dt>
+							<dd>
+								<b>{{data.amount}}</b>
+								<p>{{data.mall}}</p>
+								<p>{{data.address}}</p>
+							</dd>
+						</dl>
+						<div class="con">
+							<span class="price">价格:</span>
+							<p class="info">
+								<span>{{data.price.list1.price}}<i>{{data.price.list1.pont}}</i></span>
+								<span>{{data.price.list2.price}}<i>{{data.price.list2.pont}}</i></span>
+								<span>{{data.price.list3.price}}<i>{{data.price.list3.pont}}</i></span>
+							</p>
+						</div>
+					</li>
+				</ul>
+				<div class="upTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;margin-bottom:-40px;">上拉
+			    </div>
+			</div>
+			<div class="empty"">抱歉，美女在隔壁嘿嘿嘿-_-|||-_-|||-_-|||</div>
+			</section>		
+	</div>
+</body>
+<script>
+var app = angular.module("app",[]);
+app.service("Server",["$http",function($http){
+	//初始化获取数据
+	this.getdata = function(callback){
+		$http({
+			methoad:"get",
+			url:"json/list1.json",
+		}).success(function(data){
+			callback(data);
+			console.log(data)
+		})
+	};
+	//点击不同的日期发送不同请求获取数据
+	this.getDateList = function(index,callback){
+		$http({
+			methoad:"get",
+			url:"json/list"+index+".json"
+		}).success(function(res){
+			callback(res);
+		})
+	}
+}]);
+
+app.controller("con1",["$scope","Server","$interval",function($scope,Server,$interval){
+	$scope.datas = Server.getdata(function(res){
+		$scope.datas = res;
+		$scope.index = 1;
+
+
+	});
+	$scope.hours=00;
+	$scope.minutes=00;
+	$scope.seconds=00;
+	var date = new Date();
+	$scope.day = date.getDate();
+	$scope.Month = date.getMonth()+1;
+	console.log($scope.day,$scope.Month)
+	$(function(){
+		var timer = null;
+		$(".active").click();
+		//日期滑动
+		var swiper1 = new Swiper(".swiper-container",{
+			slidesPerView : 3,
+			slidesPerGroup : 3,
+		});
+		$(".scroller").show();
+		$(".empty").hide();
+		//点击日期添加选中样式
+		$(".swiper-wrapper").on("click","span",function(event){
+			$(".swiper-wrapper span").removeAttr("class");
+			$(this).addClass("active");
+			$scope.index = $(".swiper-wrapper span").index($(this));
+			console.log($scope.index);
+			if($scope.index==0){
+				$(".scroller").hide();
+				$(".empty").show();
+				$interval.cancel(timer);
+				setTime(0);
+			}else{
+				$(".scroller").show();
+				$(".empty").hide();
+				Server.getDateList($scope.index,function(res){
+					$scope.datas = res;
+					setTimeout(main,500);
+				});
+				$interval.cancel(timer);
+				setTime($(".swiper-wrapper span").index($(this)));
+			}	
+		});
+		//剩余时间
+		
+		setTime(1)//初始化
+		function setTime(index){
+			if(index==0){
+				$scope.hours=00;
+				$scope.minutes=00;
+				$scope.seconds=00;
+				// $interval.cancel(timer);	
+			}else{
+				index--;
+				$scope.hours = (24-date.getHours()-1)+(24*index);
+				$scope.minutes = (60-date.getMinutes());
+				$scope.seconds = (60-date.getSeconds());
+			}
+			
+			// console.log(hours+"+"+minutes+"+"+seconds);
+			timer = $interval(function(){
+				$scope.seconds--;
+			 	// console.log($scope.seconds);
+			 	if($scope.seconds==0){
+			 		$scope.seconds=59;
+			 		$scope.minutes--;
+			 		if($scope.minutes==0){
+			 			$scope.minutes=59
+			 			$scope.hours--;
+			 			if($scope.hours<=0 && $scope.seconds<=0){
+			 				$scope.seconds = 0;
+			 				$interval.cancel(timer);
+			 			}
+			 		}
+				} 
+			},1000);
+		}
+
+		//页面滚动
+		var myScroll,downTag,
+		$downTag = $(".downTag"),
+			$upTag = $(".upTag"),
+		flag = "",
+		maxScrollY=0;
+		//延迟Iscrool在页面数据渲染后加载（获取准确高度）
+		setTimeout(main,500);
+		function main(){
+    		myScroll = new IScroll('.wrapper', {
+              probeType:2,
+              startY:-40
+		     })
+    		maxScrollY = myScroll.maxScrollY;
+		    myScroll.on('scroll',function() {
+		    	// console.log(this.y+'='+this.maxScrollY);
+		        if (this.y > 5 && !flag && this.directionY==-1) {//当
+		           $downTag.html("释放刷新！");
+		           flag="down";
+		        }else if(this.y<-5 && this.directionY && flag=="down"){
+		           $downTag.html("下拉");
+		           flag="";
+		        }else if(this.y < maxScrollY-100 && this.directionY==1 &&!flag){
+		           $upTag.html("释放加载！");
+		           this.maxScrollY = maxScrollY-100;
+		           flag="up";
+		        }else if( this.y > maxScrollY-100 && flag=="up" && this.directionY==-1){
+		           $upTag.html("上拉");
+		           this.maxScrollY = maxScrollY;
+		           flag="";
+		        }
+		    });
+		    //滚动停止后判断执行
+		    myScroll.on('scrollEnd',function() {
+		        if (!flag&& this.y<4 && this.y > -40) {
+		           this.scrollTo(0,-40,300);
+		           flag="";
+		        }else if(flag=="down"){
+		           $downTag.html("加载中...");
+		           setTimeout(function(){
+		           	 fresh();
+		           },100)
+		        }else if(flag=="up"){
+		          $upTag.html("加载中...");
+		 		  setTimeout(function(){
+		           	  getList();
+		           },100)
+		        };
+		    });
+
+			function fresh(){           
+	           myScroll.scrollTo(0,-40,300);
+	           $downTag.html("下拉");
+	           Server.getDateList($scope.index,function(res){
+	           		$scope.datas=res;		
+	            	$upTag.html("上拉");
+	            	//数据刷新后从新获取滚动高度
+	            	setTimeout(main,500);
+	            	_refresh();
+	            });
+			}
+
+	        function getList(){
+	            Server.getDateList($scope.index,function(res){
+	            	for(var i=0;i<1;i++){
+	           			$scope.datas.push(res[i]);
+	           		}
+	            	$upTag.html("上拉");
+	            	_refresh();
+	            });
+	        };
+
+	        function _refresh(){
+	           flag="";
+	           myScroll.refresh();
+	           maxScrollY = myScroll.maxScrollY;
+	        }
+	        //监听
+			document.addEventListener('touchmove', function(e){ 
+				e.preventDefault(); 
+			},false);
+		}		    
+	});
+}]);
+</script>
+</html>
