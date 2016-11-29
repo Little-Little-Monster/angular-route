@@ -18,14 +18,14 @@
 			<nav>
 				<div class="swiper-container">
 				    <div class="swiper-wrapper">
-				        <div class="swiper-slide"><span>已结束</span></div>
-				        <div class="swiper-slide"><span class="active">{{Month}}月{{day}}号</span></div>
-				        <div class="swiper-slide"><span>{{Month}}月{{day+1}}号</span></div>
-				        <div class="swiper-slide"><span>{{Month}}月{{day+2}}号</span></div>
-				        <div class="swiper-slide"><span>{{Month}}月{{day+3}}号</span></div>
-				    	<div class="swiper-slide"><span>{{Month}}月{{day+4}}号</span></div>
-				        <div class="swiper-slide"><span>{{Month}}月{{day+5}}号</span></div>
-				        <div class="swiper-slide"><span>{{Month}}月{{day+6}}号</span></div>
+					<div class="swiper-slide"><span>已结束</span></div>
+					<div class="swiper-slide"><span class="active">{{Month}}月{{day}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+1}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+2}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+3}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+4}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+5}}号</span></div>
+					<div class="swiper-slide"><span>{{Month}}月{{day+6}}号</span></div>
 				    </div>
 				</div>
 			</nav>
@@ -36,39 +36,39 @@
 				</p>
 			</div>
 		</header>
-			<section class="wrapper">
-			<div class="scroller">
-			    <div class="downTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;">下拉
-			    </div> 
-				<ul>
-					<li ng-repeat="data in datas">
-						<p class="edit">
-							<b>&#xe606;</b>
-							<b>&#xe74b;</b>
+		<section class="wrapper">
+		<div class="scroller">
+		    <div class="downTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;">下拉
+		    </div> 
+			<ul>
+				<li ng-repeat="data in datas">
+					<p class="edit">
+						<b>&#xe606;</b>
+						<b>&#xe74b;</b>
+					</p>
+					<dl>
+						<dt><img ng-src="{{data.img}}"/></dt>
+						<dd>
+							<b>{{data.amount}}</b>
+							<p>{{data.mall}}</p>
+							<p>{{data.address}}</p>
+						</dd>
+					</dl>
+					<div class="con">
+						<span class="price">价格:</span>
+						<p class="info">
+							<span>{{data.price.list1.price}}<i>{{data.price.list1.pont}}</i></span>
+							<span>{{data.price.list2.price}}<i>{{data.price.list2.pont}}</i></span>
+							<span>{{data.price.list3.price}}<i>{{data.price.list3.pont}}</i></span>
 						</p>
-						<dl>
-							<dt><img ng-src="{{data.img}}"/></dt>
-							<dd>
-								<b>{{data.amount}}</b>
-								<p>{{data.mall}}</p>
-								<p>{{data.address}}</p>
-							</dd>
-						</dl>
-						<div class="con">
-							<span class="price">价格:</span>
-							<p class="info">
-								<span>{{data.price.list1.price}}<i>{{data.price.list1.pont}}</i></span>
-								<span>{{data.price.list2.price}}<i>{{data.price.list2.pont}}</i></span>
-								<span>{{data.price.list3.price}}<i>{{data.price.list3.pont}}</i></span>
-							</p>
-						</div>
-					</li>
-				</ul>
-				<div class="upTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;margin-bottom:-40px;">上拉
-			    </div>
-			</div>
-			<div class="empty"">抱歉，美女在隔壁嘿嘿嘿-_-|||-_-|||-_-|||</div>
-			</section>		
+					</div>
+				</li>
+			</ul>
+			<div class="upTag" style="height: 40px;width:100%;background-color: #f3f3f3;text-align: center; line-height: 40px;margin-bottom:-40px;">上拉
+		    </div>
+		</div>
+		<div class="empty"">抱歉，美女在隔壁嘿嘿嘿-_-|||-_-|||-_-|||</div>
+		</section>		
 	</div>
 </body>
 <script>
@@ -99,8 +99,6 @@ app.controller("con1",["$scope","Server","$interval",function($scope,Server,$int
 	$scope.datas = Server.getdata(function(res){
 		$scope.datas = res;
 		$scope.index = 1;
-
-
 	});
 	$scope.hours=00;
 	$scope.minutes=00;
